@@ -1,0 +1,20 @@
+# Declaring the user list
+[http.middlewares]
+  [http.middlewares.secured.chain]
+    middlewares = ["safe-ipwhitelist", "auth", "secureHeader"]
+  
+  [http.middlewares.secureHeader.headers]
+    frameDeny = true
+    sslRedirect = true
+    stsSeconds = 31536000
+    stsPreload = true
+    stsIncludeSubdomains = true
+
+  [http.middlewares.auth.basicAuth]
+    users = [
+      "admin:$apr1$a0vglnd5$VHy7.rlbsuVqjns4YMiRx0",
+    ]
+    removeHeader = true
+
+  [http.middlewares.safe-ipwhitelist.ipWhiteList]
+    sourceRange = ["103.15.49.222/32, 115.79.213.185/32, 118.69.62.113/32, 172.18.0.0/16"]

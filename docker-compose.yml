@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  proxy:
+    image: traefik:latest
+    container_name: proxy
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./config/etc/traefik/traefik.toml:/etc/traefik/traefik.toml:ro"
+      - "./config/etc/traefik/ssl:/etc/traefik/ssl"
+      - "./config/etc/traefik/conf:/etc/traefik/conf:ro"
+    healthcheck:
+      test: ["CMD", "wget", "http://localhost:8082/ping","--spider"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.proxy.entrypoints=websecure"
+      - "traefik.http.routers.proxy.rule=Host(`sv88d254.matbao.io`)"
+      - "traefik.http.routers.proxy.tls=true"
+      - "traefik.http.routers.proxy.service=api@internal"
+      - "traefik.http.routers.proxy.middlewares=secured@file"
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external: true

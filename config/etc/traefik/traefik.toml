@@ -1,0 +1,70 @@
+################################################################
+# Global configuration
+################################################################
+
+[global]
+  checkNewVersion = true
+  sendAnonymousUsage = false
+
+################################################################
+# Traefik logs configuration
+################################################################
+
+[log]
+  level = "DEBUG"
+  filePath = "/var/log/traefik/debug.log"
+  format = "json"
+
+################################################################
+# Access logs configuration
+################################################################
+
+[accessLog]
+  filePath = "/var/log/traefik/access.log"
+  format = "json"
+
+################################################################
+# Entrypoints configuration
+################################################################
+
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+    [entryPoints.web.http.redirections.entryPoint]
+      to = "websecure"
+      scheme = "https"
+
+  [entryPoints.websecure]
+    address = ":443"
+
+  [entryPoints.ping]
+    address = ":8082"
+
+################################################################
+# API and dashboard configuration
+################################################################
+
+[api]
+  dashboard = true
+  debug = true
+
+################################################################
+# Ping configuration
+################################################################
+
+[ping]
+  entryPoint = "ping"
+
+################################################################
+# Docker configuration backend
+################################################################
+
+[providers]
+  [providers.docker]
+    endpoint = "unix:///var/run/docker.sock"
+    exposedByDefault = false
+    network = "proxy"
+
+  [providers.file]
+    directory = "/etc/traefik/conf/"
+    watch = true
